@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>HW2</title>
+    <link
+      rel="icon"
+      href="files/blue_favicon/favicon.ico"
+      type="image/x-icon"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="sign_in_up.css" />
+  </head>
+  <body style="height: 100vh" dir="rtl" onload="onLoad()">
+    <div
+      class="d-flex flex-column justify-content-center align-items-center h-100"
+    >
+      <!-- Top Navigation bar -->
+      <nav
+        class="navbar d-flex fixed-top shadow w-100 p-2"
+        style="max-height: 10%;"
+      >
+        <div
+          class="d-flex justify-content-between align-items-center w-100"
+          style="max-height: 70px;"
+          id="navContainer"
+        >
+          <div style="height: 10%">
+            <a class="navbar-brand" id="logo">
+              <img src="files/blue_logo_200x200.png" height="100" />
+            </a>
+          </div>
+          <div id="nav-items">
+            <ul class="nav " id="login-btns">
+              <button
+                onclick="onBack()"
+                class="btn btn-link d-flex justify-content-center mx-1 back-button p-0"
+              >
+                <p class="m-0"><small>بازگشت به خانه</small></p>
+                <i class="fa fa-chevron-left m-1"></i>
+              </button>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- main content -->
+      <div class="container d-flex justify-content-center h-75 mt-5">
+        <div class="row d-flex flex-column mc h-100" style="overflow: hidden;">
+          <div class="p-0 h-100 forms-container bg-light">
+            <div class="d-flex flex-column  h-100 p-0">
+              <div id="tabs" class="d-flex justify-content-center">
+                <a id="signup" class="col-6 text-center tab active bg-light"
+                  >ثبت‌نام</a
+                >
+                <a id="signin" class="col-6 text-center tab">ورود</a>
+              </div>
+              <div class="d-flex flex-column justify-content-center h-100">
+                <form
+                  id="signup-form"
+                  class="form show"
+                  action="javascript:signupValidate();"
+                  novalidate
+                >
+                  <input
+                    type="email"
+                    class="form-control field p-2"
+                    id="email"
+                    placeholder="ایمیل"
+                  />
+                  <input
+                    type="password"
+                    class="form-control field p-2 mt-2"
+                    id="password"
+                    placeholder="رمز عبور"
+                  />
+                  <input
+                    type="password"
+                    class="form-control field p-2 mt-2"
+                    id="confirm"
+                    placeholder="تکرار رمز عبور"
+                  />
+                  <div
+                    class="form-group form-check d-flex flex-row pt-2 mt-2 mb-0"
+                  >
+                    <label class="form-check-label d-flex flex-row">
+                      <p class="col mr-2">
+                        <small
+                          ><a href="./home.html">قوانین و شرایط</a> را
+                          میپذیرم.</small
+                        >
+                      </p>
+                      <input
+                        id="policy"
+                        class="col-1 form-check-input"
+                        type="checkbox"
+                      />
+                    </label>
+                  </div>
+                  <button
+                    id="signup_submit"
+                    type="submit"
+                    class="btn btn-primary button w-100 p-3"
+                  >
+                    <strong>ثبت‌نام</strong>
+                  </button>
+
+                  <!-- alert -->
+                  <div
+                    id="signup_alert"
+                    class="alert alert-danger d-flex flex-column justify-content-center p-1 mt-3 alert-div text-sm-right"
+                  >
+                    <div
+                      id="alert_body"
+                      class="d-flex flex-row justify-content-between alert-body"
+                    >
+                      <p id="signup_message" class="m-0">
+                        This alert box could indicate a warning that might need
+                        attention.
+                      </p>
+                      <button
+                        type="button"
+                        class="close mx-2 px-2"
+                        onclick="onCloseClicked()"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                <form
+                  id="signin-form"
+                  class="form"
+                  action="javascript:signinValidate();"
+                  novalidate
+                >
+                  <input
+                    type="email"
+                    class="form-control field p-2"
+                    id="email"
+                    placeholder="ایمیل"
+                  />
+                  <input
+                    type="password"
+                    class="form-control field p-2 mt-2"
+                    id="password"
+                    placeholder="رمز عبور"
+                  />
+                  <button
+                    id="signin_submit"
+                    type="submit"
+                    class="btn btn-primary button  w-100 mt-5 p-3"
+                  >
+                    <strong>ورود</strong>
+                  </button>
+
+                  <!-- alert -->
+                  <div
+                    id="signin_alert"
+                    class="alert alert-danger d-flex flex-column justify-content-center p-1 mt-3 alert-div text-sm-right"
+                  >
+                    <div
+                      id="alert_body"
+                      class="d-flex flex-row justify-content-between alert-body text-sm-right"
+                    >
+                      <p id="signin_message" class="m-0">
+                        This alert box could indicate a warning that might need
+                        attention.
+                      </p>
+                      <button
+                        type="button"
+                        class="close mx-2 px-2"
+                        onclick="onCloseClicked()"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div
+            class="bg-primary p-0 image-holder mw-100 mh-100"
+            style="max-width: 100%"
+          >
+            <picture class=" w-100 h-100">
+              <source
+                srcset="files/signup-lowQ-light.jpg"
+                media="(max-width: 1000px)"
+              />
+              <source srcset="files/signup-highQ-light.jpg" />
+
+              <img class="img-fluid mw-100" alt="Responsive image" />
+              <div class="image-text p-2">
+                <h3>
+                  some text
+                </h3>
+                <p class="m-0">
+                  some text some text some text some text some text
+                </p>
+              </div>
+            </picture>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="sign_in_up.js"></script>
+  </body>
+</html>
