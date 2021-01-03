@@ -82,8 +82,6 @@ function toggleNightMode(checkbox) {
 
 let tabs = document.getElementById("nav-tabs");
 tabs.addEventListener("click", onTabClicked);
-let pageFooter = document.getElementById("pageFooter");
-pageFooter.addEventListener("click", onTabClicked);
 
 function onTabClicked(event) {
   let tabs = document.getElementsByClassName("tab");
@@ -113,10 +111,6 @@ function onTabClicked(event) {
   document.getElementById(footerID).classList.add("active");
 }
 
-function onSignIn() {
-  location.replace("./sign_in_up.html?tab=signin");
-}
-
-function onSignUp() {
-  location.replace("./sign_in_up.html?tab=signup");
+function onLogo() {
+  location.replace("./home.html?tab=home");
 }
