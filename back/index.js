@@ -44,6 +44,8 @@ app.get('/', function(req, res) {
 });
 
 
+const ACCOUNT_ALREADY_EXISTS = 202;
+const INVALID_USER_PASS = 101;
 
 app.get('/api/signup', function(req, res){
   res.status(405).send({'message': "Only `Post` Method is Valid"});
@@ -63,37 +65,76 @@ app.post('/api/signup', function(req, res){
     return;
   }
 
-  var regex = /\w+@\w+\.[a-z]+/g;
-  var ver = regex.test(email);
-  // console.log(ver);
-  if(!ver){
+  if(!validateEmail(email)){
     sendResponse(res, 400, {"message": "field `email` is not valid"});
     return;
   }
 
-  var user = new Parse.User();
+  let user = new Parse.User();
   user.set("username", email);
   user.set("password", pass);
   (async () => {
-    try{
-      await user.signUp();
-      sendResponse(res, 201, {"message": "user has been created."});
+      await user.signUp(); 
+  })()
+  .then(() => {
+    sendResponse(res, 201, {"message": "user has been created."});
+    return;
+  })
+  .catch(err => {
+    if(err.code == ACCOUNT_ALREADY_EXISTS){
+      sendResponse(res, 409, {"message": "email already exist."});
+      return;
     }
-    catch(err){
-      if(err.code == 202){
-        sendResponse(res, 409, {"message": "email already exist."});
-      }
-      
-    }
-  })();
+  });
+
 });
 
 app.get('/api/signin', function(req, res){
-  // res.status(200).send('Signin success.');
+  res.status(405).send({"message": "Only `Post` Method is Valid"});
+});
+
+app.post('/api/signin', function(req, res){
+  let email = req.body.email;
+  let pass = req.body.password;
+
+  if( email == undefined || pass == undefined){
+    sendResponse(res, 400, {"message": "Request Length should be 2"});
+    return;
+  }
+
+  if(!validateEmail(email)){
+    sendResponse(res, 400, {"message": "filed `email` is not valid"});
+    return;
+  }
+
+  let user;
+  (async () =>{
+   user = await Parse.User.logIn(email, pass, {usePost: true});
+  })()
+  .then(() => {
+    console.log('inside then');
+    sendResponse(res, 200, { "token": user.getSessionToken()});
+    console.log(user.getSessionToken());
+  })
+  .catch((err) => {
+    if(err.code == INVALID_USER_PASS){
+      sendResponse(res, 401, {"message": "wrong email or password."});
+      return;
+    }
+    console.log(err);
+  });
+  
+
 });
 
 function sendResponse(res, statusCode, response){
   res.status(statusCode).send(response);
+}
+
+function validateEmail(email){
+  var regex = /\w+@\w+\.[a-z]+/g;
+  let ver = regex.test(email);
+  return ver;
 }
 
 
