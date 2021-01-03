@@ -33,7 +33,8 @@ function onBack() {
 }
 
 function signup(email, pass) {
-  location.replace("./home.html?tab=home");
+  // location.replace("./home.html?tab=home");
+  sendSignupReq(email, pass);
 }
 
 function signin(email, pass) {
@@ -134,4 +135,22 @@ function onCloseClicked() {
       alert
     );
   }
+}
+
+
+
+function sendSignupReq(email, pass){
+  fetch("http://127.0.0.1:1337/api/signup", {
+    method: 'POST',
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: "email=" + email + "&password=" + pass
+  })
+  .then((res) => res.json())
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
 }
