@@ -112,9 +112,8 @@ app.post('/api/signin', function(req, res){
    user = await Parse.User.logIn(email, pass, {usePost: true});
   })()
   .then(() => {
-    console.log('inside then');
     sendResponse(res, 200, { "token": user.getSessionToken()});
-    console.log(user.getSessionToken());
+    // console.log(user.getSessionToken());
   })
   .catch((err) => {
     if(err.code == INVALID_USER_PASS){
@@ -124,6 +123,57 @@ app.post('/api/signin', function(req, res){
     console.log(err);
   });
   
+});
+
+app.get('/api/post', function(req, res){
+  const posts = Parse.Object.extend("Posts");
+  let query = new Parse.Query(posts);
+  
+  // const obj = new posts();
+  // obj.set("title", "title post 112221");
+  // obj.set('content', 'content post 121122');
+  // obj.set('created_by', 'user idk');
+
+  // obj.save()
+  // .then((obj) => {
+  //   console.log(obj);
+  // })
+  // let response = [];
+  // let result;
+
+  (async ()=>{
+   return await query.findAll();
+  })()
+  .then( (result) =>{
+    // Parse.Object
+    let response = [];
+    (async () =>{
+      for (const object of result) {
+        await object.fetch()
+        .then((a) => {
+          let year = a.createdAt.getFullYear();
+          let month = (a.createdAt.getMonth() % 12) + 1;
+          let date = a.createdAt.getDate();
+          let created_at = year + "/" + month + "/" + date;
+
+          response.push({
+            "id": a.id,
+            "title": a.attributes.title,
+            "content": a.attributes.content,
+            "created_by": a.attributes.created_by.id,
+            "created_at": created_at,
+          });
+        })
+      }
+    })()
+    .then(() =>{
+        console.log(response);
+        sendResponse(res, 200, {'posts': response});
+    })
+  })
+  .catch( (err) => {
+    console.log(err);
+  });
 
 });
 
