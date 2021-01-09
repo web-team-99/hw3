@@ -23,24 +23,19 @@ var api = new ParseServer({
     classNames: ["Posts", "Comments"] // List of classes to support for query subscriptions
   }
 });
-// Client-keys like the javascript key or the .NET key are not necessary with parse-server
-// If you wish you require them, you can set them as options in the initialization above:
-// javascriptKey, restAPIKey, dotNetKey, clientKey
+
 
 var app = express();
 
-// // Serve static assets from the /public folder
-// app.use('/public', express.static(path.join(__dirname, '/public')));
-
-// Serve the Parse API on the /parse URL prefix
 var mountPath = process.env.PARSE_MOUNT || '/parse';
 app.use(mountPath, api);
 app.use(body_parser.urlencoded({extended: true}));
 app.use(cors());
+app.use('/api/admin/', authenticateToken);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function(req, res) {
-  res.status(200).send('I dream of being a website.  Please star the parse-server repo on GitHub!');
+  res.status(200).send('I dream of being postObject website.  Please star the parse-server repo on GitHub!');
 });
 
 
@@ -150,17 +145,17 @@ app.get('/api/post', function(req, res){
     (async () =>{
       for (const object of result) {
         await object.fetch()
-        .then((a) => {
-          let year = a.createdAt.getFullYear();
-          let month = (a.createdAt.getMonth() % 12) + 1;
-          let date = a.createdAt.getDate();
+        .then((postObject) => {
+          let year = postObject.createdAt.getFullYear();
+          let month = (postObject.createdAt.getMonth() % 12) + 1;
+          let date = postObject.createdAt.getDate();
           let created_at = year + "/" + month + "/" + date;
 
           response.push({
-            "id": a.id,
-            "title": a.attributes.title,
-            "content": a.attributes.content,
-            "created_by": a.attributes.created_by.id,
+            "id": postObject.id,
+            "title": postObject.attributes.title,
+            "content": postObject.attributes.content,
+            "created_by": postObject.attributes.created_by.id,
             "created_at": created_at,
           });
         })
@@ -176,17 +171,51 @@ app.get('/api/post', function(req, res){
   });
 
 });
+let i = 0;
+app.get('/api/admin/user/crud', function(req, res){
+  
+  console.log('handler get  '+ i++);
+
+  console.log(Parse.User.current.getSessionToken);
+});
 
 function sendResponse(res, statusCode, response){
   res.status(statusCode).send(response);
 }
 
 function validateEmail(email){
-  var regex = /\w+@\w+\.[a-z]+/g;
-  let ver = regex.test(email);
+  var regex = /\w+@\w+\.[postObject-z]+/g;
+  let ver = regex.test(email); 
   return ver;
 }
 
+function authenticateToken(req, res, next){
+  console.log(req.header('auth-token'));
+  let token = req.header('auth-token');
+
+  // let sessions = Parse.Object.extend('_Session');
+  // let query = new Parse.Query(sessions);
+  
+  // (async () => {
+  //   return await query.findAll();
+  // })()
+  // .then((result) => {
+  //   console.log(result);
+  // })
+  // .catch((err) => {
+  //   console.log(err);
+  // });
+  let current = Parse.User.current;
+  if(current !== undefined && current.getSessionToken !== token){
+    sendResponse(res, 401, {"message": "permission denied."})
+    return;
+  }
+
+  Parse.User.become(token).then(next());
+
+  // console.log('middleware');
+  // next();
+}
 
 var port = process.env.PORT || 1337;
 var httpServer = require('http').createServer(app);
