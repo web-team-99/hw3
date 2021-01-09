@@ -1,5 +1,6 @@
 let tabs = document.getElementById("tabs");
 tabs.addEventListener("click", onTabsClicked);
+let server = "http://127.0.0.1:1337";
 
 function onTabsClicked(event) {
   let i, tabcontents, tabs;
@@ -38,7 +39,8 @@ function signup(email, pass) {
 }
 
 function signin(email, pass) {
-  location.replace("./home.html?tab=home");
+  // location.replace("./home.html?tab=home");
+  sendSigninReq(email, pass);
 }
 
 function signupValidate() {
@@ -127,7 +129,7 @@ function onCloseClicked() {
   for (alert of alerts) {
     alert.classList.add("close-alert");
     setTimeout(
-      a => {
+      (a) => {
         a.classList.remove("show-alert");
         a.classList.remove("close-alert");
       },
@@ -137,20 +139,52 @@ function onCloseClicked() {
   }
 }
 
-
-
-function sendSignupReq(email, pass){
-  fetch("http://127.0.0.1:1337/api/signup", {
-    method: 'POST',
-    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-    body: "email=" + email + "&password=" + pass
+function sendSignupReq(email, pass) {
+  let alert = document.getElementById("signup_alert");
+  let messageP = document.getElementById("signup_message");
+  fetch(server + "/api/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "email=" + email + "&password=" + pass,
   })
-  .then((res) => res.json())
-  .then((data) => {
-    console.log(data);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      if (data.message == "user has been created.") {
+        messageP.innerText = "ثبت نام با موفقیت انجام شد.";
+      } else {
+        messageP.innerText = data.message;
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      messageP.innerText = data.message;
+    });
 
+  alert.classList.add("show-alert");
+}
+
+function sendSigninReq(email, pass) {
+  let alert = document.getElementById("signin_alert");
+  let messageP = document.getElementById("signin_message");
+  fetch(server + "/api/signin", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "email=" + email + "&password=" + pass,
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      if (data.token != null) {
+        messageP.innerText = "ورود با موفقیت انجام شد.";
+      } else {
+        messageP.innerText = data.message;
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      messageP.innerText = data.message;
+    });
+
+  alert.classList.add("show-alert");
 }
