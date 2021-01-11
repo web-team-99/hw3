@@ -1,6 +1,3 @@
-// Example express application adding the parse-server module to expose Parse
-// compatible API routes.
-
 var express = require("express");
 var ParseServer = require("parse-server").ParseServer;
 var path = require("path");
@@ -17,24 +14,29 @@ var api = new ParseServer({
   databaseURI: databaseUri || "mongodb://localhost:27017/dev",
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + "/cloud/main.js",
   appId: process.env.APP_ID || "id",
-  masterKey: process.env.MASTER_KEY || "masterKey", //Add your master key here. Keep it secret!
-  serverURL: process.env.SERVER_URL || "http://127.0.0.1:1337/parse", // Don't forget to change to https if needed
+  masterKey: process.env.MASTER_KEY || "masterKey", 
+  serverURL: process.env.SERVER_URL || "http://127.0.0.1:1337/parse",
   liveQuery: {
-    classNames: ["Posts", "Comments"] // List of classes to support for query subscriptions
+    classNames: ["Posts", "Comments"]
   }
 });
 
-
 var app = express();
 
-// Serve the Parse API on the /parse URL prefix
 var mountPath = process.env.PARSE_MOUNT || "/parse";
 app.use(mountPath, api);
 app.use(body_parser.urlencoded({ extended: true }));
 app.use(cors());
 app.use('/api/admin/', authenticateToken);
 
-// Parse Server plays nicely with the rest of your web routes
+Parse.Cloud.beforeSave(Parse.User, async (request) => {
+  let obj = request.object;
+  if (!request.original) {
+    obj.setACL(new Parse.ACL(Parse.User.current()));
+  }
+});
+
+
 app.get("/", function (req, res) {
   res
     .status(200)
@@ -47,13 +49,6 @@ app.get("/", function (req, res) {
 // signup
 app.get("/api/signup", function (req, res) {
   res.status(405).send({ "message": "Only `Post` Method is Valid" });
-});
-
-Parse.Cloud.beforeSave(Parse.User, async (request) => {
-  let obj = request.object;
-  if (!request.original) {
-    obj.setACL(new Parse.ACL(Parse.User.current()));
-  }
 });
 
 app.post("/api/signup", function (req, res) {
@@ -91,6 +86,7 @@ app.post("/api/signup", function (req, res) {
     });
 });
 
+
 // signin
 app.get("/api/signin", function (req, res) {
   res.status(405).send({ "message": "Only `Post` Method is Valid" });
@@ -110,7 +106,6 @@ app.post("/api/signin", function (req, res) {
     return;
   }
 
-
   Parse.User.logIn(email, pass)
     .then((user) => {
       sendResponse(res, 200, { "token": user.getSessionToken() });
@@ -120,8 +115,8 @@ app.post("/api/signin", function (req, res) {
       handleParseError(res, err);
     });
 
-
 });
+
 
 // post index
 app.get("/api/post", function (req, res) {
@@ -159,6 +154,7 @@ app.get("/api/post", function (req, res) {
     });
 });
 
+
 // create post
 app.post("/api/admin/post/crud", function (req, res) {
   console.log(req.body);
@@ -190,18 +186,6 @@ app.post("/api/admin/post/crud", function (req, res) {
   ACL.setWriteAccess(user, true);
   post.setACL(ACL);
 
-
-  // (async () => {
-  //   await post.save();
-  //   })()
-  //   .then(() => {
-  //     sendResponse(res, 201, { message: "post has been created." });
-  //     return;
-  //   })
-  //   .catch(err => {
-  //     console.log(err);
-  //   });
-
   post.save()
     .then(() => {
       sendResponse(res, 201, { "message": "post has been created." });
@@ -211,7 +195,6 @@ app.post("/api/admin/post/crud", function (req, res) {
     });
 
 });
-
 
 
 // read post by id
@@ -244,16 +227,19 @@ app.get("/api/admin/post/crud/:id", function (req, res) {
   );
 });
 
+
 // read post by user
 app.get("/api/admin/post/crud", function (req, res) {
   const Post = Parse.Object.extend("Post");
   const query = new Parse.Query(Post);
 });
 
+
 // update post invalid id
 app.put("/api/admin/post/crud", function (req, res) {
   sendResponse(res, 400, { "message": "url id is not valid" });
 });
+
 
 // update post
 app.put("/api/admin/post/crud/:id", function (req, res) {
@@ -289,18 +275,23 @@ app.put("/api/admin/post/crud/:id", function (req, res) {
       post.set("content", content);
       post.save();
       sendResponse(res, 204);
-    },
-    function () {
-      sendResponse(res, 400, { "message": "url id is not valid" });
-      return;
     }
-  );
+    // ,function () {
+    //   sendResponse(res, 400, { "message": "url id is not valid" });
+    //   return;
+    // }
+  )
+  .catch( err => {
+    handleParseError(res, err);
+  });
 });
+
 
 // delete post invalid id
 app.delete("/api/admin/post/crud", function (req, res) {
   sendResponse(res, 400, { "message": "url id is not valid" });
 });
+
 
 // delete post
 app.delete("/api/admin/post/crud/:id", function (req, res) {
@@ -320,21 +311,23 @@ app.delete("/api/admin/post/crud/:id", function (req, res) {
       }
       post.destroy();
       sendResponse(res, 204);
-    },
-    function () {
-      sendResponse(res, 400, { "message": "url id is not valid" });
-      return;
     }
+    // ,function () {
+    //   sendResponse(res, 400, { "message": "url id is not valid" });
+    //   return;
+    // }
   )
   .catch( (err) => {
     handleParseError(res, err);
   });
 });
 
+
 // read user invalid id
 app.get("/api/admin/post/crud", function (req, res) {
   sendResponse(res, 400, { "message": "url id is not valid" });
 });
+
 
 // read user
 app.get("/api/admin/user/crud/:id", function (req, res) {
@@ -363,16 +356,18 @@ app.get("/api/admin/user/crud/:id", function (req, res) {
       };
       sendResponse(res, 201, { "user": response });
       return;
-    },
-    function () {
-      sendResponse(res, 400, { "message": "url id is not valid" });
-      return;
     }
+  //   ,function () {
+  //     sendResponse(res, 400, { "message": "url id is not valid" });
+  //     return;
+  //   }
   )
     .catch((err) => {
       handleParseError(res, err);
     });
 });
+
+
 
 function sendResponse(res, statusCode, response) {
   res.status(statusCode).send(response);
