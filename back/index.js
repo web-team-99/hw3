@@ -280,6 +280,11 @@ app.put("/api/admin/post/crud/:id", function (req, res) {
 
   query.get(id).then(
     function (post) {
+      if( post.attributes.created_by.id !== user.id){
+        sendResponse(res, 401, { "message": "permission denied." });
+        return;
+      }
+
       post.set("title", title);
       post.set("content", content);
       post.save();
@@ -309,19 +314,26 @@ app.delete("/api/admin/post/crud/:id", function (req, res) {
 
   query.get(id).then(
     function (post) {
+      if( post.attributes.created_by.id !== user.id){
+        sendResponse(res, 401, { "message": "permission denied." });
+        return;
+      }
       post.destroy();
       sendResponse(res, 204);
     },
     function () {
-      sendResponse(res, 400, { message: "url id is not valid" });
+      sendResponse(res, 400, { "message": "url id is not valid" });
       return;
     }
-  );
+  )
+  .catch( (err) => {
+    handleParseError(res, err);
+  });
 });
 
 // read user invalid id
 app.get("/api/admin/post/crud", function (req, res) {
-  sendResponse(res, 400, { message: "url id is not valid" });
+  sendResponse(res, 400, { "message": "url id is not valid" });
 });
 
 // read user
@@ -332,7 +344,7 @@ app.get("/api/admin/user/crud/:id", function (req, res) {
   const user = Parse.User.current();
 
   if (id !== user.id) {
-    sendResponse(res, 401, { message: "Permission denied." });
+    sendResponse(res, 401, { "message": "Permission denied." });
     return;
   }
 
@@ -351,11 +363,11 @@ app.get("/api/admin/user/crud/:id", function (req, res) {
       };
       sendResponse(res, 201, { user: response });
       return;
+    },
+    function () {
+      sendResponse(res, 400, { "message": "url id is not valid" });
+      return;
     }
-    // function () {
-    //   sendResponse(res, 400, { message: "url id is not valid" });
-    //   return;
-    // }
   )
     .catch((err) => {
       handleParseError(res, err);
@@ -373,22 +385,17 @@ function validateEmail(email) {
 }
 
 function authenticateToken(req, res, next) {
-  console.log(req.header('auth-token'));
   let token = req.header('auth-token');
 
   Parse.User.enableUnsafeCurrentUser();
 
   Parse.User.become(token).then((user) => {
-    // console.log(user);
     console.log(Parse.User.current());
     next();
   })
     .catch((err) => {
-      // console.log(err.message);
-      // sendResponse(res, 401, {'message': err.message});
       handleParseError(res, err);
     });
-
 }
 
 // Constansts
@@ -397,9 +404,9 @@ const INVALID_USER_PASS = "Invalid username/password.";
 const INVALID_SESSION_TOKEN = "Invalid session token.";
 const OBJECT_NOT_FOUND = "Object Not Found.";
 
-let i = 0
+
 function handleParseError(res, err) {
-  console.log(i++ + " ::: " + err.code + " ::: " + err.message);
+  console.log(err.code + " ::: " + err.message);
   switch (err.message) {
     case INVALID_SESSION_TOKEN:
       sendResponse(res, 401, { message: "Invalid session token." })
@@ -411,7 +418,7 @@ function handleParseError(res, err) {
       sendResponse(res, 409, { message: "email already exist." });
       break;
     case OBJECT_NOT_FOUND:
-      sendResponse(res, 400, { message: "Object not found." });
+      sendResponse(res, 400, { message: "url id is not valid" });
       break;
     default:
       sendResponse(res, 405, { message: err.message });
