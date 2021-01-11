@@ -35,7 +35,7 @@ app.use(cors());
 app.use('/api/admin/', authenticateToken);
 
 // Parse Server plays nicely with the rest of your web routes
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   res
     .status(200)
     .send(
@@ -43,15 +43,28 @@ app.get("/", function(req, res) {
     );
 });
 
-const ACCOUNT_ALREADY_EXISTS = 202;
-const INVALID_USER_PASS = 101;
 
 // signup
-app.get("/api/signup", function(req, res) {
+app.get("/api/signup", function (req, res) {
   res.status(405).send({ message: "Only `Post` Method is Valid" });
 });
 
-app.post("/api/signup", function(req, res) {
+Parse.Cloud.beforeSave(Parse.User, async (request) => {
+  let obj = request.object;
+  console.log("BEFORE SAVE");
+  if(!request.original){
+    console.log("BEFORE SAVE. IN IF !!!!");
+    // let ACL = new Parse.ACL();
+  //   ACL.setPublicReadAccess(false);
+  // ACL.setPublicWriteAccess(false);
+  // ACL.setReadAccess(obj, true);
+  // ACL.setWriteAccess(obj, true);
+  //   obj.setACL(ACL);
+  obj.setACL(new Parse.ACL(Parse.User.current()));
+  }
+});
+
+app.post("/api/signup", function (req, res) {
   console.log(req.body);
   var email = req.body.email;
   var pass = req.body.password;
@@ -75,27 +88,49 @@ app.post("/api/signup", function(req, res) {
   let user = new Parse.User();
   user.set("username", email);
   user.set("password", pass);
-  (async () => {
-    await user.signUp();
-  })()
+
+  // let ACL = new Parse.ACL();
+  // ACL.setPublicReadAccess(false);
+  // ACL.setPublicWriteAccess(false);
+  // ACL.setReadAccess(user, true);
+  // ACL.setWriteAccess(user, true);
+
+  // user.setACL(ACL);
+
+  // (async () => {
+  //   await user.signUp();
+  // })()
+  //   .then(() => {
+  //     sendResponse(res, 201, { message: "user has been created." });
+  //     console.log(Parse.User.current());
+  //     return;
+  //   })
+  //   .catch(err => {
+  //     if (err.code == ACCOUNT_ALREADY_EXISTS) {
+  //       sendResponse(res, 409, { message: "email already exist." });
+  //       return;
+  //     }
+  //   });
+  user.signUp()
     .then(() => {
       sendResponse(res, 201, { message: "user has been created." });
       return;
     })
     .catch(err => {
-      if (err.code == ACCOUNT_ALREADY_EXISTS) {
-        sendResponse(res, 409, { message: "email already exist." });
-        return;
-      }
+      handleParseError(res, err);
+      // if (err.code == ACCOUNT_ALREADY_EXISTS) {
+      //   sendResponse(res, 409, { message: "email already exist." });
+      //   return;
+      // }
     });
 });
 
 // signin
-app.get("/api/signin", function(req, res) {
+app.get("/api/signin", function (req, res) {
   res.status(405).send({ message: "Only `Post` Method is Valid" });
 });
 
-app.post("/api/signin", function(req, res) {
+app.post("/api/signin", function (req, res) {
   let email = req.body.email;
   let pass = req.body.password;
 
@@ -109,25 +144,30 @@ app.post("/api/signin", function(req, res) {
     return;
   }
 
-  let user;
-  (async () => {
-    user = await Parse.User.logIn(email, pass, { usePost: true });
-  })()
-    .then(() => {
+
+  Parse.User.logIn(email, pass)
+    .then((user) => {
       sendResponse(res, 200, { token: user.getSessionToken() });
       // console.log(user.getSessionToken());
+      // console.log(Parse.User.current());
+      // Parse.User.become(user.getSessionToken())
+      //   .then(console.log(Parse.User.current()));
+      return;
     })
     .catch(err => {
-      if (err.code == INVALID_USER_PASS) {
-        sendResponse(res, 401, { message: "wrong email or password." });
-        return;
-      }
-      console.log(err);
+      handleParseError(res, err);
+      // if (err.code == INVALID_USER_PASS) {
+      //   sendResponse(res, 401, { message: "wrong email or password." });
+      //   return;
+      // }
+      // console.log(err);
     });
+
+
 });
 
 // post index
-app.get("/api/post", function(req, res) {
+app.get("/api/post", function (req, res) {
   // const posts = Parse.Object.extend("Posts");
   // let post = Parse.Post
   const Post = Parse.Object.extend("Post");
@@ -145,14 +185,44 @@ app.get("/api/post", function(req, res) {
   // let response = [];
   // let result;
 
-  (async () => {
-    // return await query.findAll();
-    const posts = await query.findAll();
-    console.log(posts);
-    return posts;
-  })()
+  // (async () => {
+  //   // return await query.findAll();
+  //   const posts = await query.findAll();
+  //   console.log(posts);
+  //   return posts;
+  // })()
+  //   .then(result => {
+  //     // Parse.Object
+  //     let response = [];
+  //     (async () => {
+  //       for (const object of result) {
+  //         await object.fetch().then(a => {
+  //           let year = a.createdAt.getFullYear();
+  //           let month = (a.createdAt.getMonth() % 12) + 1;
+  //           let date = a.createdAt.getDate();
+  //           let created_at = year + "/" + month + "/" + date;
+
+  //           response.push({
+  //             id: a.id,
+  //             title: a.attributes.title,
+  //             content: a.attributes.content,
+  //             // created_by: a.attributes.created_by.id,
+  //             created_at: created_at
+  //           });
+  //         });
+  //       }
+  //     })().then(() => {
+  //       console.log(response);
+  //       sendResponse(res, 200, { posts: response });
+  //     });
+  //   })
+  //   .catch(err => {
+  //     console.log(err);
+  //   });
+
+    
+    query.findAll()
     .then(result => {
-      // Parse.Object
       let response = [];
       (async () => {
         for (const object of result) {
@@ -171,18 +241,20 @@ app.get("/api/post", function(req, res) {
             });
           });
         }
-      })().then(() => {
+      })()
+      .then(() => {
         console.log(response);
         sendResponse(res, 200, { posts: response });
       });
     })
     .catch(err => {
-      console.log(err);
+      // console.log(err);
+      handleParseError(res, err);
     });
 });
 
 // create post
-app.post("/api/admin/post/crud", function(req, res) {
+app.post("/api/admin/post/crud", function (req, res) {
   console.log(req.body);
   let title = req.body.title;
   let content = req.body.content;
@@ -206,26 +278,45 @@ app.post("/api/admin/post/crud", function(req, res) {
   post.set("content", content);
   post.set("user", user);
 
-  (async () => {
-    await post.save();
-  })()
+  let ACL = new Parse.ACL();
+  ACL.setPublicReadAccess(true);
+  ACL.setPublicWriteAccess(false);
+  ACL.setWriteAccess(user, true);
+  post.setACL(ACL);
+  
+
+  // (async () => {
+  //   await post.save();
+  //   })()
+  //   .then(() => {
+  //     sendResponse(res, 201, { message: "post has been created." });
+  //     return;
+  //   })
+  //   .catch(err => {
+  //     console.log(err);
+  //   });
+  
+  post.save()
     .then(() => {
       sendResponse(res, 201, { message: "post has been created." });
-      return;
     })
     .catch(err => {
-      console.log(err);
+      // console.log(err);
+      handleParseError(res, err);
     });
+
 });
 
+
+
 // read post by id
-app.get("/api/admin/post/crud/:id", function(req, res) {
+app.get("/api/admin/post/crud/:id", function (req, res) {
   console.log(req.params.id);
   const Post = Parse.Object.extend("Post");
   let id = req.params.id;
   const query = new Parse.Query(Post);
   query.get(id).then(
-    function(post) {
+    function (post) {
       let year = post.createdAt.getFullYear();
       let month = (post.createdAt.getMonth() % 12) + 1;
       let date = post.createdAt.getDate();
@@ -241,7 +332,7 @@ app.get("/api/admin/post/crud/:id", function(req, res) {
       sendResponse(res, 201, { post: response });
       return;
     },
-    function() {
+    function () {
       sendResponse(res, 400, { message: "url id is not valid" });
       return;
     }
@@ -249,18 +340,18 @@ app.get("/api/admin/post/crud/:id", function(req, res) {
 });
 
 // read post by user
-app.get("/api/admin/post/crud", function(req, res) {
+app.get("/api/admin/post/crud", function (req, res) {
   const Post = Parse.Object.extend("Post");
   const query = new Parse.Query(Post);
 });
 
 // update post invalid id
-app.put("/api/admin/post/crud", function(req, res) {
+app.put("/api/admin/post/crud", function (req, res) {
   sendResponse(res, 400, { message: "url id is not valid" });
 });
 
 // update post
-app.put("/api/admin/post/crud/:id", function(req, res) {
+app.put("/api/admin/post/crud/:id", function (req, res) {
   console.log(req.body, req.params.id);
   let id = req.params.id;
   let title = req.body.title;
@@ -283,33 +374,26 @@ app.put("/api/admin/post/crud/:id", function(req, res) {
   const query = new Parse.Query(Post);
 
   query.get(id).then(
-    function(post) {
+    function (post) {
       post.set("title", title);
       post.set("content", content);
       post.save();
       sendResponse(res, 204);
     },
-    function() {
+    function () {
       sendResponse(res, 400, { message: "url id is not valid" });
       return;
     }
   );
 });
-let i = 0;
-app.get('/api/admin/user/crud', function(req, res){
-  
-  console.log('handler get  '+ i++);
-
-  console.log(Parse.User.current.getSessionToken);
-});
 
 // delete post invalid id
-app.delete("/api/admin/post/crud", function(req, res) {
+app.delete("/api/admin/post/crud", function (req, res) {
   sendResponse(res, 400, { message: "url id is not valid" });
 });
 
 // delete post
-app.delete("/api/admin/post/crud/:id", function(req, res) {
+app.delete("/api/admin/post/crud/:id", function (req, res) {
   console.log(req.params.id);
   let id = req.params.id;
 
@@ -319,11 +403,11 @@ app.delete("/api/admin/post/crud/:id", function(req, res) {
   const query = new Parse.Query(Post);
 
   query.get(id).then(
-    function(post) {
+    function (post) {
       post.destroy();
       sendResponse(res, 204);
     },
-    function() {
+    function () {
       sendResponse(res, 400, { message: "url id is not valid" });
       return;
     }
@@ -331,18 +415,19 @@ app.delete("/api/admin/post/crud/:id", function(req, res) {
 });
 
 // read user invalid id
-app.get("/api/admin/post/crud", function(req, res) {
+app.get("/api/admin/post/crud", function (req, res) {
   sendResponse(res, 400, { message: "url id is not valid" });
 });
 
 // read user
-app.get("/api/admin/user/crud/:id", function(req, res) {
+app.get("/api/admin/user/crud/:id", function (req, res) {
   console.log(req.params.id);
   // const Post = Parse.Object.extend("Post");
+  console.log(Parse.User.current());
   let id = req.params.id;
   const query = new Parse.Query(Parse.User);
   query.get(id).then(
-    function(user) {
+    function (user) {
       let year = user.createdAt.getFullYear();
       let month = (user.createdAt.getMonth() % 12) + 1;
       let date = user.createdAt.getDate();
@@ -355,57 +440,79 @@ app.get("/api/admin/user/crud/:id", function(req, res) {
       };
       sendResponse(res, 201, { user: response });
       return;
-    },
-    function() {
-      sendResponse(res, 400, { message: "url id is not valid" });
-      return;
     }
-  );
+    // function () {
+    //   sendResponse(res, 400, { message: "url id is not valid" });
+    //   return;
+    // }
+  )
+  .catch( (err) => {
+    handleParseError(res, err);
+  });
 });
 
 function sendResponse(res, statusCode, response) {
   res.status(statusCode).send(response);
 }
 
-function validateEmail(email){
+function validateEmail(email) {
   var regex = /\w+@\w+\.[postObject-z]+/g;
-  let ver = regex.test(email); 
+  let ver = regex.test(email);
   return ver;
 }
 
-function authenticateToken(req, res, next){
+function authenticateToken(req, res, next) {
   console.log(req.header('auth-token'));
   let token = req.header('auth-token');
 
-  // let sessions = Parse.Object.extend('_Session');
-  // let query = new Parse.Query(sessions);
-  
-  // (async () => {
-  //   return await query.findAll();
-  // })()
-  // .then((result) => {
-  //   console.log(result);
-  // })
-  // .catch((err) => {
-  //   console.log(err);
-  // });
-  let current = Parse.User.current;
-  if(current !== undefined && current.getSessionToken !== token){
-    sendResponse(res, 401, {"message": "permission denied."})
-    return;
+  Parse.User.enableUnsafeCurrentUser();
+
+  Parse.User.become(token).then((user) => {
+    // console.log(user);
+    console.log(Parse.User.current());
+    next();
+  })
+  .catch((err) => {
+    // console.log(err.message);
+    // sendResponse(res, 401, {'message': err.message});
+    handleParseError(res, err);
+  });
+
+}
+
+// Constansts
+const ACCOUNT_ALREADY_EXISTS = 202;
+const INVALID_USER_PASS = 101;
+const INVALID_SESSION_TOKEN = 209;
+const PERMISSION_DENIED = 141;
+
+let i = 0
+function handleParseError(res, err){
+  console.log(i++ + " ::: " + err.code + " ::: " + err.message);
+  switch(err.code){
+    case INVALID_SESSION_TOKEN:
+      sendResponse(res, 401, { message: "Invalid session token."})
+      break;
+    case INVALID_USER_PASS:
+      // 101 INVALID USER PASS.
+      sendResponse(res, 401, { message: "wrong email or password." });
+      break;
+    case ACCOUNT_ALREADY_EXISTS:
+      sendResponse(res, 409, { message: "email already exist." });
+      break;
+    case PERMISSION_DENIED:
+      sendResponse(res, 401, { message: "Permission denied."});
+      break;
+    case 101:
+      // Object not found.
+      break;
+    default:
+      sendResponse(res, 405, { message: err.message});
   }
-
-  Parse.User.become(token).then(next());
-
-  // console.log('middleware');
-  // next();
 }
 
 var port = process.env.PORT || 1337;
 var httpServer = require("http").createServer(app);
-httpServer.listen(port, function() {
+httpServer.listen(port, function () {
   console.log("parse-server-example running on port " + port + ".");
 });
-
-// This will enable the Live Query real-time server
-// ParseServer.createLiveQueryServer(httpServer);
