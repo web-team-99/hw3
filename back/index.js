@@ -46,7 +46,7 @@ app.get("/", function (req, res) {
 
 // signup
 app.get("/api/signup", function (req, res) {
-  res.status(405).send({ message: "Only `Post` Method is Valid" });
+  res.status(405).send({ "message": "Only `Post` Method is Valid" });
 });
 
 Parse.Cloud.beforeSave(Parse.User, async (request) => {
@@ -62,18 +62,18 @@ app.post("/api/signup", function (req, res) {
   var pass = req.body.password;
 
   if (email === undefined || pass === undefined) {
-    sendResponse(res, 400, { message: "Request Length should be 2" });
+    sendResponse(res, 400, { "message": "Request Length should be 2" });
     return;
   }
   if (pass.length < 5) {
     sendResponse(res, 400, {
-      message: "filed `password`.length should be gt 5"
+      "message": "filed `password`.length should be gt 5"
     });
     return;
   }
 
   if (!validateEmail(email)) {
-    sendResponse(res, 400, { message: "field `email` is not valid" });
+    sendResponse(res, 400, { "message": "field `email` is not valid" });
     return;
   }
 
@@ -83,7 +83,7 @@ app.post("/api/signup", function (req, res) {
 
   user.signUp()
     .then(() => {
-      sendResponse(res, 201, { message: "user has been created." });
+      sendResponse(res, 201, { "message": "user has been created." });
       return;
     })
     .catch(err => {
@@ -93,7 +93,7 @@ app.post("/api/signup", function (req, res) {
 
 // signin
 app.get("/api/signin", function (req, res) {
-  res.status(405).send({ message: "Only `Post` Method is Valid" });
+  res.status(405).send({ "message": "Only `Post` Method is Valid" });
 });
 
 app.post("/api/signin", function (req, res) {
@@ -101,19 +101,19 @@ app.post("/api/signin", function (req, res) {
   let pass = req.body.password;
 
   if (email == undefined || pass == undefined) {
-    sendResponse(res, 400, { message: "Request Length should be 2" });
+    sendResponse(res, 400, { "message": "Request Length should be 2" });
     return;
   }
 
   if (!validateEmail(email)) {
-    sendResponse(res, 400, { message: "filed `email` is not valid" });
+    sendResponse(res, 400, { "message": "filed `email` is not valid" });
     return;
   }
 
 
   Parse.User.logIn(email, pass)
     .then((user) => {
-      sendResponse(res, 200, { token: user.getSessionToken() });
+      sendResponse(res, 200, { "token": user.getSessionToken() });
       return;
     })
     .catch(err => {
@@ -140,18 +140,18 @@ app.get("/api/post", function (req, res) {
             let created_at = year + "/" + month + "/" + date;
 
             response.push({
-              id: a.id,
-              title: a.attributes.title,
-              content: a.attributes.content,
-              // created_by: a.attributes.created_by.id,
-              created_at: created_at
+              "id": a.id,
+              "title": a.attributes.title,
+              "content": a.attributes.content,
+              "created_by": a.attributes.created_by.id,
+              "created_at": created_at
             });
           });
         }
       })()
         .then(() => {
           console.log(response);
-          sendResponse(res, 200, { posts: response });
+          sendResponse(res, 200, { "posts": response });
         });
     })
     .catch(err => {
@@ -166,12 +166,12 @@ app.post("/api/admin/post/crud", function (req, res) {
   let content = req.body.content;
 
   if (content === undefined || title === undefined) {
-    sendResponse(res, 400, { message: "Request Length should be 2" });
+    sendResponse(res, 400, { "message": "Request Length should be 2" });
     return;
   }
   if (title.trim().length < 1) {
     sendResponse(res, 400, {
-      message: "filed `title` is not valid"
+      "message": "filed `title` is not valid"
     });
     return;
   }
@@ -182,7 +182,7 @@ app.post("/api/admin/post/crud", function (req, res) {
   const post = new Post();
   post.set("title", title);
   post.set("content", content);
-  post.set("user", user);
+  post.set("created_by", user);
 
   let ACL = new Parse.ACL();
   ACL.setPublicReadAccess(true);
@@ -204,7 +204,7 @@ app.post("/api/admin/post/crud", function (req, res) {
 
   post.save()
     .then(() => {
-      sendResponse(res, 201, { message: "post has been created." });
+      sendResponse(res, 201, { "message": "post has been created." });
     })
     .catch(err => {
       handleParseError(res, err);
@@ -228,17 +228,17 @@ app.get("/api/admin/post/crud/:id", function (req, res) {
       let created_at = year + "/" + month + "/" + date;
 
       response = {
-        id: post.id,
-        title: post.attributes.title,
-        content: post.attributes.content,
-        // created_by: post.attributes.created_by.id,
-        created_at: created_at
+        "id": post.id,
+        "title": post.attributes.title,
+        "content": post.attributes.content,
+        "created_by": post.attributes.created_by.id,
+        "created_at": created_at
       };
       sendResponse(res, 201, { post: response });
       return;
     },
     function () {
-      sendResponse(res, 400, { message: "url id is not valid" });
+      sendResponse(res, 400, { "message": "url id is not valid" });
       return;
     }
   );
@@ -252,7 +252,7 @@ app.get("/api/admin/post/crud", function (req, res) {
 
 // update post invalid id
 app.put("/api/admin/post/crud", function (req, res) {
-  sendResponse(res, 400, { message: "url id is not valid" });
+  sendResponse(res, 400, { "message": "url id is not valid" });
 });
 
 // update post
@@ -263,12 +263,12 @@ app.put("/api/admin/post/crud/:id", function (req, res) {
   let content = req.body.content;
 
   if (content === undefined || title === undefined) {
-    sendResponse(res, 400, { message: "Request Length should be 2" });
+    sendResponse(res, 400, { "message": "Request Length should be 2" });
     return;
   }
   if (title.trim().length == 0) {
     sendResponse(res, 400, {
-      message: "filed `title` is not valid"
+      "message": "filed `title` is not valid"
     });
     return;
   }
@@ -291,7 +291,7 @@ app.put("/api/admin/post/crud/:id", function (req, res) {
       sendResponse(res, 204);
     },
     function () {
-      sendResponse(res, 400, { message: "url id is not valid" });
+      sendResponse(res, 400, { "message": "url id is not valid" });
       return;
     }
   );
@@ -299,7 +299,7 @@ app.put("/api/admin/post/crud/:id", function (req, res) {
 
 // delete post invalid id
 app.delete("/api/admin/post/crud", function (req, res) {
-  sendResponse(res, 400, { message: "url id is not valid" });
+  sendResponse(res, 400, { "message": "url id is not valid" });
 });
 
 // delete post
@@ -357,11 +357,11 @@ app.get("/api/admin/user/crud/:id", function (req, res) {
       let created_at = year + "/" + month + "/" + date;
 
       response = {
-        id: user.id,
-        email: user.attributes.username,
-        created_at: created_at
+        "id": user.id,
+        "email": user.attributes.username,
+        "created_at": created_at
       };
-      sendResponse(res, 201, { user: response });
+      sendResponse(res, 201, { "user": response });
       return;
     },
     function () {
@@ -409,19 +409,19 @@ function handleParseError(res, err) {
   console.log(err.code + " ::: " + err.message);
   switch (err.message) {
     case INVALID_SESSION_TOKEN:
-      sendResponse(res, 401, { message: "Invalid session token." })
+      sendResponse(res, 401, { "message": "Invalid session token." })
       break;
     case INVALID_USER_PASS:
-      sendResponse(res, 401, { message: "Wrong email or password." });
+      sendResponse(res, 401, { "message": "Wrong email or password." });
       break;
     case ACCOUNT_ALREADY_EXISTS:
-      sendResponse(res, 409, { message: "email already exist." });
+      sendResponse(res, 409, { "message": "email already exist." });
       break;
     case OBJECT_NOT_FOUND:
-      sendResponse(res, 400, { message: "url id is not valid" });
+      sendResponse(res, 400, { "message": "url id is not valid" });
       break;
     default:
-      sendResponse(res, 405, { message: err.message });
+      sendResponse(res, 405, { "message": err.message });
   }
 }
 
