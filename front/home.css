@@ -190,6 +190,23 @@ body {
   box-shadow: 0 0 20px var(--image-shadow);
 }
 
+.post-title {
+  background-color: var(--background-high);
+  color: var(--text-high);
+  padding: 10px;
+  font-weight: bolder;
+  font-size: 1.2em;
+  box-shadow: 1px 1px 3px rgb(5, 8, 58);
+}
+
+.post-description {
+  background-color: var(--background-high);
+  color: var(--text-high);
+  padding: 10px;
+  font-size: 1em;
+  box-shadow: 1px 1px 3px rgb(5, 8, 58);
+}
+
 /* Sidebar */
 #sidebar {
   padding-top: 55px;
@@ -447,7 +464,8 @@ body {
   transform: none;
 }
 
-.btn-outline-primary:active, .btn-outline-primary:hover{
+.btn-outline-primary:active,
+.btn-outline-primary:hover {
   background-color: var(--background-high) !important;
   border-color: var(--text-med) !important;
   color: var(--text-med) !important;
@@ -468,7 +486,6 @@ body {
 .btn:active {
   transform: translateY(1px);
 }
-
 
 /* Night Mode Switch */
 #customSwitch {
@@ -506,14 +523,14 @@ body {
   background-color: #3673b1;
 }
 
-.custom-switch .custom-control-input:checked~.custom-control-label::after {
+.custom-switch .custom-control-input:checked ~ .custom-control-label::after {
   background-color: rgb(187, 37, 37);
   -webkit-transform: translateX(0.625rem);
   transform: translateX(0.625rem);
   box-shadow: -0.125rem 0 0.125rem rgba(0, 0, 0, 0.2);
-} 
+}
 
-.custom-control-input:checked~.custom-control-label::before {
+.custom-control-input:checked ~ .custom-control-label::before {
   background-color: var(--dark-text-med);
   border-color: var(--dark-text-med);
 }
@@ -524,7 +541,7 @@ body {
 
 .custom-switch.left .custom-control-label {
   left: 0;
-padding-left: 0;
+  padding-left: 0;
 }
 
 .custom-switch.left .custom-control-label::before {
@@ -539,16 +556,14 @@ padding-left: 0;
   margin-left: 33px;
 }
 
-
 /* Footer buttons */
 .footer-tab {
   padding: 0;
 }
 
-.tab.active{
+.tab.active {
   border-bottom: solid 4px !important;
 }
-
 
 /* Table btns */
 #table-back-btn span {
@@ -556,13 +571,13 @@ padding-left: 0;
   padding-left: 12px;
 }
 
-#table-back-btn span:before{
-  content: '\00ab';
+#table-back-btn span:before {
+  content: "\00ab";
   opacity: 0;
-  transition: .5s;
+  transition: 0.5s;
 }
 
-#table-back-btn:hover span{
+#table-back-btn:hover span {
   padding-right: 10px;
 }
 
@@ -570,19 +585,18 @@ padding-left: 0;
   opacity: 1;
 }
 
-
 #table-forth-btn span {
   display: inline-block;
   padding-right: 12px;
 }
 
 #table-forth-btn span:after {
-  content: '\00bb';
+  content: "\00bb";
   opacity: 0;
-  transition: .5s;
+  transition: 0.5s;
 }
 
-#table-forth-btn:hover span{
+#table-forth-btn:hover span {
   padding-left: 10px;
 }
 

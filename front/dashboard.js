@@ -1,3 +1,12 @@
+let server = "http://127.0.0.1:1337";
+
+function onCreatePostClicked() {
+  createPostTitle = document.getElementById("create_post_title");
+  createPostDescription = document.getElementById("create_post_description");
+  console.log(createPostTitle.value);
+  createPost(createPostTitle.value, createPostDescription.value);
+}
+
 function onLoad() {
   let url = new URL(window.location.href);
   let tab = url.searchParams.get("tab");
@@ -113,4 +122,26 @@ function onTabClicked(event) {
 
 function onLogo() {
   location.replace("./home.html?tab=home");
+}
+
+//api methods
+
+function createPost(title, description) {
+  token = document.cookie.split("=")[1];
+  console.log(token);
+  fetch(server + "/api/admin/post/crud", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "auth-token": token,
+    },
+    body: "title=" + title + "&content=" + description,
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }

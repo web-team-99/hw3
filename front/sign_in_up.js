@@ -177,6 +177,9 @@ function sendSigninReq(email, pass) {
       console.log(data);
       if (data.token != null) {
         messageP.innerText = "ورود با موفقیت انجام شد.";
+        // setCookie("token", data.token, 7);
+        document.cookie = "token=" + data.token;
+        // document.write("Setting Cookies : " + "token=" + data.token);
       } else {
         messageP.innerText = data.message;
       }

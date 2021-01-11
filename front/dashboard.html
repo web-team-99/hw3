@@ -26,7 +26,7 @@
     <nav class="navbar fixed-top shadow" id="topNavbar">
       <div class="d-flex" id="navContainer">
         <div class="navbar-brand" id="logo" onclick="onLogo()">
-          <img src="files/blue_logo_200x200.png" class="logoImg " />
+          <img src="files/blue_logo_200x200.png" class="logoImg" />
           <img src="files/red_logo_200x200.png" class="logoImg disabledLogo" />
         </div>
         <button
@@ -104,11 +104,11 @@
             >
               <div class="four-in-line-pictures">
                 <figure class="gallery__item gallery__item--9 img-shadow">
-                  <img
-                    src="files/mainPictures/9.jpg"
-                    class="gallery__img"
-                    alt="Image 1"
-                  />
+                  <p class="post-title">عنوان</p>
+                  <p class="post-description">
+                    توضیحات شسیبنسینبکت ی ی نب شنبنیسنبتنسیب تیس سیتب
+                    سیتنبسنیبتنیبنستی
+                  </p>
                   <div class="row m-1">
                     <button class="col btn btn-danger m-1">حذف</button>
                     <button type="button" class="col btn btn-secondary m-1">
@@ -161,24 +161,39 @@
           </div>
 
           <!-- Modal body -->
-          <div class="modal-body">
-            <div class="custom-file">
-              <label
-                class="custom-file-label"
-                for="customFile"
-                style="text-align: end"
-                >تصویر را انتخاب کنید</label
-              >
-              <input type="file" class="custom-file-input" id="customFile" />
-            </div>
-          </div>
+
+          <form
+            id="signup-form"
+            class="form show"
+            action="javascript:signupValidate();"
+            novalidate
+          >
+            <input
+              type="text"
+              class="form-control field p-2"
+              id="create_post_title"
+              placeholder="عنوان"
+            />
+            <input
+              type="text"
+              class="form-control field p-2 mt-2"
+              id="create_post_description"
+              placeholder="توضیحات"
+            />
+          </form>
 
           <!-- Modal footer -->
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-dismiss="modal">
               بستن
             </button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-dismiss="modal"
+              id="create_post_button"
+              onclick="onCreatePostClicked()"
+            >
               ایجاد
             </button>
           </div>
