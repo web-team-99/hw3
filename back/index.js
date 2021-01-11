@@ -51,16 +51,8 @@ app.get("/api/signup", function (req, res) {
 
 Parse.Cloud.beforeSave(Parse.User, async (request) => {
   let obj = request.object;
-  console.log("BEFORE SAVE");
-  if(!request.original){
-    console.log("BEFORE SAVE. IN IF !!!!");
-    // let ACL = new Parse.ACL();
-  //   ACL.setPublicReadAccess(false);
-  // ACL.setPublicWriteAccess(false);
-  // ACL.setReadAccess(obj, true);
-  // ACL.setWriteAccess(obj, true);
-  //   obj.setACL(ACL);
-  obj.setACL(new Parse.ACL(Parse.User.current()));
+  if (!request.original) {
+    obj.setACL(new Parse.ACL(Parse.User.current()));
   }
 });
 
@@ -89,28 +81,6 @@ app.post("/api/signup", function (req, res) {
   user.set("username", email);
   user.set("password", pass);
 
-  // let ACL = new Parse.ACL();
-  // ACL.setPublicReadAccess(false);
-  // ACL.setPublicWriteAccess(false);
-  // ACL.setReadAccess(user, true);
-  // ACL.setWriteAccess(user, true);
-
-  // user.setACL(ACL);
-
-  // (async () => {
-  //   await user.signUp();
-  // })()
-  //   .then(() => {
-  //     sendResponse(res, 201, { message: "user has been created." });
-  //     console.log(Parse.User.current());
-  //     return;
-  //   })
-  //   .catch(err => {
-  //     if (err.code == ACCOUNT_ALREADY_EXISTS) {
-  //       sendResponse(res, 409, { message: "email already exist." });
-  //       return;
-  //     }
-  //   });
   user.signUp()
     .then(() => {
       sendResponse(res, 201, { message: "user has been created." });
@@ -118,10 +88,6 @@ app.post("/api/signup", function (req, res) {
     })
     .catch(err => {
       handleParseError(res, err);
-      // if (err.code == ACCOUNT_ALREADY_EXISTS) {
-      //   sendResponse(res, 409, { message: "email already exist." });
-      //   return;
-      // }
     });
 });
 
@@ -148,19 +114,10 @@ app.post("/api/signin", function (req, res) {
   Parse.User.logIn(email, pass)
     .then((user) => {
       sendResponse(res, 200, { token: user.getSessionToken() });
-      // console.log(user.getSessionToken());
-      // console.log(Parse.User.current());
-      // Parse.User.become(user.getSessionToken())
-      //   .then(console.log(Parse.User.current()));
       return;
     })
     .catch(err => {
       handleParseError(res, err);
-      // if (err.code == INVALID_USER_PASS) {
-      //   sendResponse(res, 401, { message: "wrong email or password." });
-      //   return;
-      // }
-      // console.log(err);
     });
 
 
@@ -168,60 +125,10 @@ app.post("/api/signin", function (req, res) {
 
 // post index
 app.get("/api/post", function (req, res) {
-  // const posts = Parse.Object.extend("Posts");
-  // let post = Parse.Post
   const Post = Parse.Object.extend("Post");
   const query = new Parse.Query(Post);
 
-  // const obj = new posts();
-  // obj.set("title", "title post 112221");
-  // obj.set('content', 'content post 121122');
-  // obj.set('created_by', 'user idk');
-
-  // obj.save()
-  // .then((obj) => {
-  //   console.log(obj);
-  // })
-  // let response = [];
-  // let result;
-
-  // (async () => {
-  //   // return await query.findAll();
-  //   const posts = await query.findAll();
-  //   console.log(posts);
-  //   return posts;
-  // })()
-  //   .then(result => {
-  //     // Parse.Object
-  //     let response = [];
-  //     (async () => {
-  //       for (const object of result) {
-  //         await object.fetch().then(a => {
-  //           let year = a.createdAt.getFullYear();
-  //           let month = (a.createdAt.getMonth() % 12) + 1;
-  //           let date = a.createdAt.getDate();
-  //           let created_at = year + "/" + month + "/" + date;
-
-  //           response.push({
-  //             id: a.id,
-  //             title: a.attributes.title,
-  //             content: a.attributes.content,
-  //             // created_by: a.attributes.created_by.id,
-  //             created_at: created_at
-  //           });
-  //         });
-  //       }
-  //     })().then(() => {
-  //       console.log(response);
-  //       sendResponse(res, 200, { posts: response });
-  //     });
-  //   })
-  //   .catch(err => {
-  //     console.log(err);
-  //   });
-
-    
-    query.findAll()
+  query.findAll()
     .then(result => {
       let response = [];
       (async () => {
@@ -242,13 +149,12 @@ app.get("/api/post", function (req, res) {
           });
         }
       })()
-      .then(() => {
-        console.log(response);
-        sendResponse(res, 200, { posts: response });
-      });
+        .then(() => {
+          console.log(response);
+          sendResponse(res, 200, { posts: response });
+        });
     })
     .catch(err => {
-      // console.log(err);
       handleParseError(res, err);
     });
 });
@@ -283,7 +189,7 @@ app.post("/api/admin/post/crud", function (req, res) {
   ACL.setPublicWriteAccess(false);
   ACL.setWriteAccess(user, true);
   post.setACL(ACL);
-  
+
 
   // (async () => {
   //   await post.save();
@@ -295,13 +201,12 @@ app.post("/api/admin/post/crud", function (req, res) {
   //   .catch(err => {
   //     console.log(err);
   //   });
-  
+
   post.save()
     .then(() => {
       sendResponse(res, 201, { message: "post has been created." });
     })
     .catch(err => {
-      // console.log(err);
       handleParseError(res, err);
     });
 
@@ -423,8 +328,14 @@ app.get("/api/admin/post/crud", function (req, res) {
 app.get("/api/admin/user/crud/:id", function (req, res) {
   console.log(req.params.id);
   // const Post = Parse.Object.extend("Post");
-  console.log(Parse.User.current());
   let id = req.params.id;
+  const user = Parse.User.current();
+
+  if (id !== user.id) {
+    sendResponse(res, 401, { message: "Permission denied." });
+    return;
+  }
+
   const query = new Parse.Query(Parse.User);
   query.get(id).then(
     function (user) {
@@ -446,9 +357,9 @@ app.get("/api/admin/user/crud/:id", function (req, res) {
     //   return;
     // }
   )
-  .catch( (err) => {
-    handleParseError(res, err);
-  });
+    .catch((err) => {
+      handleParseError(res, err);
+    });
 });
 
 function sendResponse(res, statusCode, response) {
@@ -472,42 +383,38 @@ function authenticateToken(req, res, next) {
     console.log(Parse.User.current());
     next();
   })
-  .catch((err) => {
-    // console.log(err.message);
-    // sendResponse(res, 401, {'message': err.message});
-    handleParseError(res, err);
-  });
+    .catch((err) => {
+      // console.log(err.message);
+      // sendResponse(res, 401, {'message': err.message});
+      handleParseError(res, err);
+    });
 
 }
 
 // Constansts
-const ACCOUNT_ALREADY_EXISTS = 202;
-const INVALID_USER_PASS = 101;
-const INVALID_SESSION_TOKEN = 209;
-const PERMISSION_DENIED = 141;
+const ACCOUNT_ALREADY_EXISTS = "Account already exists for this username.";
+const INVALID_USER_PASS = "Invalid username/password.";
+const INVALID_SESSION_TOKEN = "Invalid session token.";
+const OBJECT_NOT_FOUND = "Object Not Found.";
 
 let i = 0
-function handleParseError(res, err){
+function handleParseError(res, err) {
   console.log(i++ + " ::: " + err.code + " ::: " + err.message);
-  switch(err.code){
+  switch (err.message) {
     case INVALID_SESSION_TOKEN:
-      sendResponse(res, 401, { message: "Invalid session token."})
+      sendResponse(res, 401, { message: "Invalid session token." })
       break;
     case INVALID_USER_PASS:
-      // 101 INVALID USER PASS.
-      sendResponse(res, 401, { message: "wrong email or password." });
+      sendResponse(res, 401, { message: "Wrong email or password." });
       break;
     case ACCOUNT_ALREADY_EXISTS:
       sendResponse(res, 409, { message: "email already exist." });
       break;
-    case PERMISSION_DENIED:
-      sendResponse(res, 401, { message: "Permission denied."});
-      break;
-    case 101:
-      // Object not found.
+    case OBJECT_NOT_FOUND:
+      sendResponse(res, 400, { message: "Object not found." });
       break;
     default:
-      sendResponse(res, 405, { message: err.message});
+      sendResponse(res, 405, { message: err.message });
   }
 }
 
