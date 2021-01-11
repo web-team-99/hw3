@@ -374,13 +374,19 @@ function sendResponse(res, statusCode, response) {
 }
 
 function validateEmail(email) {
-  var regex = /\w+@\w+\.[postObject-z]+/g;
+  var regex = /\w+@\w+\.[a-z]+/g;
   let ver = regex.test(email);
   return ver;
 }
 
 function authenticateToken(req, res, next) {
+  console.log(Parse.User.current());
   let token = req.header('auth-token');
+
+  if(!token){
+    sendResponse(res, 401, { "message": "Invalid session token." });
+    return;
+  }
 
   Parse.User.enableUnsafeCurrentUser();
 
@@ -404,7 +410,7 @@ function handleParseError(res, err) {
   console.log(err.code + " ::: " + err.message);
   switch (err.message) {
     case INVALID_SESSION_TOKEN:
-      sendResponse(res, 401, { "message": "Invalid session token." })
+      sendResponse(res, 401, { "message": "Invalid session token." });
       break;
     case INVALID_USER_PASS:
       sendResponse(res, 401, { "message": "Wrong email or password." });
