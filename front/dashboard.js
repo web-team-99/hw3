@@ -190,7 +190,7 @@ function createPost(title, description) {
   token = document.cookie.split("=")[1];
   console.log(token);
   fetch(server + "/api/admin/post/crud", {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "auth-token": token,

@@ -324,7 +324,7 @@ app.delete("/api/admin/post/crud/:id", function (req, res) {
 
 
 // read user invalid id
-app.get("/api/admin/post/crud", function (req, res) {
+app.get("/api/admin/user/crud", function (req, res) {
   sendResponse(res, 400, { "message": "url id is not valid" });
 });
 
