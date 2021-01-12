@@ -162,8 +162,8 @@ function sendSignupReq(email, pass) {
       messageP.innerText = data.message;
     });
 
-  // alert.classList.add("show-alert");
-  location.replace("./dashboard.html?tab=home");
+  alert.classList.add("show-alert");
+  // location.replace("./dashboard.html?tab=home");
 }
 
 function sendSigninReq(email, pass) {
@@ -181,6 +181,7 @@ function sendSigninReq(email, pass) {
         messageP.innerText = "ورود با موفقیت انجام شد.";
         // setCookie("token", data.token, 7);
         document.cookie = "token=" + data.token;
+        location.replace("./dashboard.html?tab=home");
         // document.write("Setting Cookies : " + "token=" + data.token);
       } else {
         messageP.innerText = data.message;
@@ -192,5 +193,5 @@ function sendSigninReq(email, pass) {
     });
 
   // alert.classList.add("show-alert");
-  location.replace("./dashboard.html?tab=home");
+  // location.replace("./dashboard.html?tab=home");
 }
