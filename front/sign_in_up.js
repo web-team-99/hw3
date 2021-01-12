@@ -1,6 +1,7 @@
 let tabs = document.getElementById("tabs");
 tabs.addEventListener("click", onTabsClicked);
-let server = "http://127.0.0.1:1337";
+// let server = "http://127.0.0.1:1337";
+let server = "http://192.168.1.105:1337";
 
 function onTabsClicked(event) {
   let i, tabcontents, tabs;
