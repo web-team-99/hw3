@@ -72,12 +72,20 @@ function createPostDiv(post) {
   const text = document.createTextNode(post.content);
   textDiv.appendChild(text);
 
+  const removeBtn = document.createElement("a");
+  removeBtn.onclick = removeBtn;
+  removeBtn.innerHTML += "حذف"
+  body.appendChild(removeBtn);
+
+
   const footerDiv = document.createElement("div");
   footerDiv.classList.add("card-footer");
-  footerDiv.classList.add("text-muted");
   postDiv.appendChild(footerDiv);
 
-  footerDiv.innerHTML += post.created_at;
+  const footer = document.createElement("small");
+  footer.classList.add("text-muted");
+  footer.innerHTML += post.created_at;
+  footerDiv.appendChild(footer);
 }
 
 function onSidebarCollapseClicked() {
@@ -204,4 +212,8 @@ function createPost(title, description) {
     .catch((err) => {
       console.log(err);
     });
+}
+
+function onRemove(){
+console.log("on remove");
 }

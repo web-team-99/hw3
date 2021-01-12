@@ -70,7 +70,10 @@ function createPost(post) {
   footerDiv.classList.add("text-muted");
   postDiv.appendChild(footerDiv);
 
-  footerDiv.innerHTML += post.created_at;
+  const footer = document.createElement("small");
+  footer.classList.add("text-muted");
+  footer.innerHTML += post.created_at;
+  footerDiv.appendChild(footer);
 }
 
 function onSidebarCollapseClicked() {
