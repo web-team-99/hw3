@@ -138,7 +138,7 @@ app.get("/api/post", function (req, res) {
               "id": a.id,
               "title": a.attributes.title,
               "content": a.attributes.content,
-              "created_by": a.attributes.created_by,
+              "created_by": a.attributes.created_by.id,
               "created_at": created_at
             });
           });
@@ -178,7 +178,7 @@ app.post("/api/admin/post/crud", function (req, res) {
   const post = new Post();
   post.set("title", title);
   post.set("content", content);
-  post.set("created_by", user.id);
+  post.set("created_by", user);
 
   let ACL = new Parse.ACL();
   ACL.setPublicReadAccess(true);
@@ -214,7 +214,7 @@ app.get("/api/admin/post/crud/:id", function (req, res) {
         "id": post.id,
         "title": post.attributes.title,
         "content": post.attributes.content,
-        "created_by": post.attributes.created_by,
+        "created_by": post.attributes.created_by.id,
         "created_at": created_at
       };
       sendResponse(res, 201, { post: response });
@@ -248,7 +248,7 @@ app.get("/api/admin/post/crud", function (req, res) {
             "id": a.id,
             "title": a.attributes.title,
             "content": a.attributes.content,
-            "created_by": a.attributes.created_by,
+            "created_by": a.attributes.created_by.id,
             "created_at": created_at
           });
         });
@@ -296,7 +296,7 @@ app.put("/api/admin/post/crud/:id", function (req, res) {
 
   query.get(id).then(
     function (post) {
-      if( post.attributes.created_by !== user.id){
+      if( post.attributes.created_by.id !== user.id){
         sendResponse(res, 401, { "message": "permission denied." });
         return;
       }
@@ -335,7 +335,7 @@ app.delete("/api/admin/post/crud/:id", function (req, res) {
 
   query.get(id).then(
     function (post) {
-      if( post.attributes.created_by !== user.id){
+      if( post.attributes.created_by.id !== user.id){
         sendResponse(res, 401, { "message": "permission denied." });
         return;
       }
