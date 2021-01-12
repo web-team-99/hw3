@@ -138,7 +138,7 @@ app.get("/api/post", function (req, res) {
               "id": a.id,
               "title": a.attributes.title,
               "content": a.attributes.content,
-              "created_by": a.attributes.created_by.id,
+              "created_by": a.attributes.created_by,
               "created_at": created_at
             });
           });
@@ -178,7 +178,7 @@ app.post("/api/admin/post/crud", function (req, res) {
   const post = new Post();
   post.set("title", title);
   post.set("content", content);
-  post.set("created_by", user);
+  post.set("created_by", user.id);
 
   let ACL = new Parse.ACL();
   ACL.setPublicReadAccess(true);
@@ -214,7 +214,7 @@ app.get("/api/admin/post/crud/:id", function (req, res) {
         "id": post.id,
         "title": post.attributes.title,
         "content": post.attributes.content,
-        "created_by": post.attributes.created_by.id,
+        "created_by": post.attributes.created_by,
         "created_at": created_at
       };
       sendResponse(res, 201, { post: response });
@@ -230,8 +230,38 @@ app.get("/api/admin/post/crud/:id", function (req, res) {
 
 // read post by user
 app.get("/api/admin/post/crud", function (req, res) {
+  console.log("in get post by user");
   const Post = Parse.Object.extend("Post");
   const query = new Parse.Query(Post);
+  query.equalTo("created_by", Parse.User.current().id);
+  query.find().then(result => {
+    let response = [];
+    (async () => {
+      for (const object of result) {
+        await object.fetch().then(a => {
+          let year = a.createdAt.getFullYear();
+          let month = (a.createdAt.getMonth() % 12) + 1;
+          let date = a.createdAt.getDate();
+          let created_at = year + "/" + month + "/" + date;
+
+          response.push({
+            "id": a.id,
+            "title": a.attributes.title,
+            "content": a.attributes.content,
+            "created_by": a.attributes.created_by,
+            "created_at": created_at
+          });
+        });
+      }
+    })()
+      .then(() => {
+        console.log(response);
+        sendResponse(res, 200, { "posts": response });
+      });
+  })
+  .catch(err => {
+    handleParseError(res, err);
+  });
 });
 
 
