@@ -73,7 +73,10 @@ function createPostDiv(post) {
   textDiv.appendChild(text);
 
   const removeBtn = document.createElement("a");
-  removeBtn.onclick = removeBtn;
+  removeBtn.classList.add("btn");
+  removeBtn.classList.add("btn-danger");
+  removeBtn.onclick = onRemove();
+  removeBtn.href = "javascript:onRemove();"
   removeBtn.innerHTML += "حذف"
   body.appendChild(removeBtn);
 
