@@ -299,6 +299,6 @@ function onEdit(event){
 }
 
 function onLogout() {
-  document.cookie = "";
+  document.cookie = "token=; expires=Thu, 18 Dec 2013 12:00:00 UTC;";
   location.replace("./home.html?tab=home");
 }
