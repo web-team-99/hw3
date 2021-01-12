@@ -1,7 +1,7 @@
 let tabs = document.getElementById("tabs");
 tabs.addEventListener("click", onTabsClicked);
-// let server = "http://127.0.0.1:1337";
-let server = "http://192.168.1.105:1337";
+let server = "http://127.0.0.1:1337";
+// let server = "http://192.168.1.105:1337";
 
 function onTabsClicked(event) {
   let i, tabcontents, tabs;
@@ -154,8 +154,23 @@ function sendSignupReq(email, pass) {
       if (data.message == "user has been created.") {
         messageP.innerText = "ثبت نام با موفقیت انجام شد.";
       } else {
-        messageP.innerText = data.message;
         alert.classList.add("show-alert");
+        switch(data.message){
+          case "Request Length should be 2":
+            messageP.innerText = "";
+            break;
+          case "filed `password`.length should be gt 5":
+            messageP.innerText = "رمز عبور باید حداقل 5 کاراکتر باشد.";
+            break;
+          case "field `email` is not valid":
+            messageP.innerText = "ایمیل وارد شده معتبر نیست.";
+            break;
+          case  "email already exist.":
+            messageP.innerText = "ایمیل وارد شده در سامانه موجود است.";
+            break;
+          default:
+            messageP.innerText = data.message;
+        }
       }
     })
     .catch((err) => {
@@ -186,8 +201,20 @@ function sendSigninReq(email, pass) {
         location.replace("./dashboard.html");
         // document.write("Setting Cookies : " + "token=" + data.token);
       } else {
-        messageP.innerText = data.message;
         alert.classList.add("show-alert");
+        switch(data.message){
+          case "Request Length should be 2":
+            messageP.innerText = "همه فیلدها اجباری هستند.";
+            break;
+          case "Wrong email or password.":
+            messageP.innerText = "ایمیل یا رمزعبور وارد شده صحیح نمی باشد.";
+            break;
+          case "field `email` is not valid":
+            messageP.innerText = "ایمیل وارد شده معتبر نیست.";
+            break;
+          default:
+            messageP.innerText = data.message;
+        }
       }
     })
     .catch((err) => {

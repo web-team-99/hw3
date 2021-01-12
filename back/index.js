@@ -37,14 +37,6 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
 });
 
 
-app.get("/", function (req, res) {
-  res
-    .status(200)
-    .send(
-      "I dream of being a website.  Please star the parse-server repo on GitHub!"
-    );
-});
-
 
 // signup
 app.get("/api/signup", function (req, res) {
@@ -52,7 +44,6 @@ app.get("/api/signup", function (req, res) {
 });
 
 app.post("/api/signup", function (req, res) {
-  console.log(req.body);
   var email = req.body.email;
   var pass = req.body.password;
 
@@ -145,7 +136,6 @@ app.get("/api/post", function (req, res) {
         }
       })()
         .then(() => {
-          console.log(response);
           sendResponse(res, 200, { "posts": response });
         });
     })
@@ -157,7 +147,6 @@ app.get("/api/post", function (req, res) {
 
 // create post
 app.post("/api/admin/post/crud", function (req, res) {
-  console.log(req.body);
   let title = req.body.title;
   let content = req.body.content;
 
@@ -199,7 +188,6 @@ app.post("/api/admin/post/crud", function (req, res) {
 
 // read post by id
 app.get("/api/admin/post/crud/:id", function (req, res) {
-  console.log(req.params.id);
   const Post = Parse.Object.extend("Post");
   let id = req.params.id;
   const query = new Parse.Query(Post);
@@ -230,7 +218,6 @@ app.get("/api/admin/post/crud/:id", function (req, res) {
 
 // read post by user
 app.get("/api/admin/post/crud", function (req, res) {
-  console.log("in get post by user");
   const Post = Parse.Object.extend("Post");
   const query = new Parse.Query(Post);
   query.equalTo("created_by", Parse.User.current());
@@ -255,7 +242,6 @@ app.get("/api/admin/post/crud", function (req, res) {
       }
     })()
       .then(() => {
-        console.log(response);
         sendResponse(res, 200, { "posts": response });
       });
   })
@@ -273,7 +259,6 @@ app.put("/api/admin/post/crud", function (req, res) {
 
 // update post
 app.put("/api/admin/post/crud/:id", function (req, res) {
-  console.log(req.body, req.params.id);
   let id = req.params.id;
   let title = req.body.title;
   let content = req.body.content;
@@ -325,7 +310,6 @@ app.delete("/api/admin/post/crud", function (req, res) {
 
 // delete post
 app.delete("/api/admin/post/crud/:id", function (req, res) {
-  console.log(req.params.id);
   let id = req.params.id;
 
   const user = Parse.User.current();
@@ -361,7 +345,6 @@ app.get("/api/admin/user/crud", function (req, res) {
 
 // read user
 app.get("/api/admin/user/crud/:id", function (req, res) {
-  console.log(req.params.id);
   // const Post = Parse.Object.extend("Post");
   let id = req.params.id;
   const user = Parse.User.current();
@@ -449,18 +432,14 @@ function validateEmail(email) {
 }
 
 function authenticateToken(req, res, next) {
-  console.log(Parse.User.current());
   let token = req.header('auth-token');
 
   if(!token){
     sendResponse(res, 401, { "message": "Invalid session token." });
     return;
   }
-
   Parse.User.enableUnsafeCurrentUser();
-
   Parse.User.become(token).then((user) => {
-    console.log(Parse.User.current());
     next();
   })
     .catch((err) => {
