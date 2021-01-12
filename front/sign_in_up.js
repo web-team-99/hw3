@@ -187,6 +187,7 @@ function sendSigninReq(email, pass) {
         // document.write("Setting Cookies : " + "token=" + data.token);
       } else {
         messageP.innerText = data.message;
+        alert.classList.add("show-alert");
       }
     })
     .catch((err) => {
