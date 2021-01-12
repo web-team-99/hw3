@@ -181,7 +181,7 @@ function sendSigninReq(email, pass) {
         messageP.innerText = "ورود با موفقیت انجام شد.";
         // setCookie("token", data.token, 7);
         document.cookie = "token=" + data.token;
-        location.replace("./dashboard.html?tab=home");
+        location.replace("./dashboard.html");
         // document.write("Setting Cookies : " + "token=" + data.token);
       } else {
         messageP.innerText = data.message;

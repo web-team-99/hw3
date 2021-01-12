@@ -11,16 +11,16 @@ function onCreatePostClicked() {
 function onLoad() {
   initPosts();
   initUser();
-  let url = new URL(window.location.href);
-  let tab = url.searchParams.get("tab");
-  if (tab === "home") {
-    document.getElementById("home-tab").click();
-    return;
-  }
-  if (tab === "data") {
-    document.getElementById("data-tab").click();
-    return;
-  }
+  // let url = new URL(window.location.href);
+  // let tab = url.searchParams.get("tab");
+  // if (tab === "home") {
+  //   document.getElementById("home-tab").click();
+  //   return;
+  // }
+  // if (tab === "data") {
+  //   document.getElementById("data-tab").click();
+  //   return;
+  // }
 }
 
 function initUser() {

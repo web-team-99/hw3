@@ -13,6 +13,11 @@ function onLoad() {
     document.getElementById("data-tab").click();
     return;
   }
+
+  if (document.cookie !== "") {
+    document.getElementById("login-btns").classList.add("d-none");
+    document.getElementById("dash-btn").classList.remove("d-none");
+  }
 }
 
 function initPosts() {
@@ -184,4 +189,8 @@ function onSignIn() {
 
 function onSignUp() {
   location.replace("./sign_in_up.html?tab=signup");
+}
+
+function onDashboard() {
+  location.replace("./dashboard.html");
 }
