@@ -79,6 +79,12 @@ function createPostDiv(post) {
   removeBtn.innerHTML += "حذف"
   body.appendChild(removeBtn);
 
+  const editBtn = document.createElement("a");
+  editBtn.classList.add("btn");
+  editBtn.classList.add("btn-secondary");
+  editBtn.onclick = onEdit;
+  editBtn.innerHTML += "ویرایش"
+  body.appendChild(editBtn);
 
   const footerDiv = document.createElement("div");
   footerDiv.classList.add("card-footer");
@@ -229,6 +235,32 @@ function onRemove(event){
       "auth-token": token,
     },
     // body: "title=" + title + "&content=" + description,
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+function onEdit(event){
+  console.log("on edit");
+  console.log(event);
+  let id = event.path[2].id;
+  let title = prompt("عنوان", "عنوان خالی");
+  let description = prompt("توضیحات", "بدون توضیحات");
+  console.log(id);
+  token = document.cookie.split("=")[1];
+  console.log(token);
+  fetch(server + "/api/admin/post/crud" + id, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "auth-token": token,
+    },
+    body: "title=" + title + "&content=" + description,
   })
     .then((res) => res.json())
     .then((data) => {
