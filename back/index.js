@@ -233,7 +233,7 @@ app.get("/api/admin/post/crud", function (req, res) {
   console.log("in get post by user");
   const Post = Parse.Object.extend("Post");
   const query = new Parse.Query(Post);
-  query.equalTo("created_by", Parse.User.current().id);
+  query.equalTo("created_by", Parse.User.current());
   query.find().then(result => {
     let response = [];
     (async () => {
