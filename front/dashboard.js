@@ -245,6 +245,7 @@ function createPost(title, description) {
     .catch((err) => {
       console.log(err);
     });
+    location.reload();
 }
 
 function onRemove(event){

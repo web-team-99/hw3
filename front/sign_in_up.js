@@ -155,14 +155,16 @@ function sendSignupReq(email, pass) {
         messageP.innerText = "ثبت نام با موفقیت انجام شد.";
       } else {
         messageP.innerText = data.message;
+        alert.classList.add("show-alert");
       }
     })
     .catch((err) => {
       console.log(err);
       messageP.innerText = data.message;
+      alert.classList.add("show-alert");
     });
 
-  alert.classList.add("show-alert");
+  // alert.classList.add("show-alert");
   // location.replace("./dashboard.html?tab=home");
 }
 
@@ -190,6 +192,7 @@ function sendSigninReq(email, pass) {
     .catch((err) => {
       console.log(err);
       messageP.innerText = data.message;
+      alert.classList.add("show-alert");
     });
 
   // alert.classList.add("show-alert");
