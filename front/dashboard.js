@@ -217,6 +217,25 @@ function createPost(title, description) {
     });
 }
 
-function onRemove(){
-console.log("on remove");
+function onRemove(event){
+  console.log("on remove");
+  let id = event.path[2].id;
+  console.log(id);
+  token = document.cookie.split("=")[1];
+  console.log(token);
+  fetch(server + "/api/admin/post/crud" + id, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "auth-token": token,
+    },
+    // body: "title=" + title + "&content=" + description,
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
