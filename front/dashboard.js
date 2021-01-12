@@ -75,6 +75,7 @@ function createPostDiv(post) {
   const removeBtn = document.createElement("a");
   removeBtn.classList.add("btn");
   removeBtn.classList.add("btn-danger");
+  removeBtn.classList.add("m1");
   removeBtn.onclick = onRemove;
   removeBtn.innerHTML += "حذف"
   body.appendChild(removeBtn);
@@ -82,6 +83,7 @@ function createPostDiv(post) {
   const editBtn = document.createElement("a");
   editBtn.classList.add("btn");
   editBtn.classList.add("btn-secondary");
+  removeBtn.classList.add("m1");
   editBtn.onclick = onEdit;
   editBtn.innerHTML += "ویرایش"
   body.appendChild(editBtn);
@@ -228,7 +230,7 @@ function onRemove(event){
   console.log(id);
   token = document.cookie.split("=")[1];
   console.log(token);
-  fetch(server + "/api/admin/post/crud" + id, {
+  fetch(server + "/api/admin/post/crud/" + id, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -254,7 +256,7 @@ function onEdit(event){
   console.log(id);
   token = document.cookie.split("=")[1];
   console.log(token);
-  fetch(server + "/api/admin/post/crud" + id, {
+  fetch(server + "/api/admin/post/crud/" + id, {
     method: "PUT",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
