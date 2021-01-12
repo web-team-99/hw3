@@ -2,6 +2,15 @@
 let server = "http://192.168.1.105:1337";
 
 function onLoad() {
+  if (document.cookie !== "") {
+    console.log("cookie");
+    document.getElementById("login-btns").classList.add("d-none");
+    document.getElementById("dash-btn").classList.remove("d-none");
+  } else {
+    console.log("no cookie");
+    console.log(document.cookie);
+  }
+  
   initPosts();
   let url = new URL(window.location.href);
   let tab = url.searchParams.get("tab");
@@ -14,10 +23,7 @@ function onLoad() {
     return;
   }
 
-  if (document.cookie !== "") {
-    document.getElementById("login-btns").classList.add("d-none");
-    document.getElementById("dash-btn").classList.remove("d-none");
-  }
+  
 }
 
 function initPosts() {
