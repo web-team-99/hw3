@@ -32,6 +32,9 @@ function initUser() {
     .then(res => res.json())
     .then(data => {
       console.log(data);
+      document.getElementById("uid").innerText = data.user.id;
+      document.getElementById("uemail").innerText = data.user.email;
+      document.getElementById("udate").innerText = data.user.created_at;
       // data.posts.forEach(element => {
         // createPostDiv(element);
       // });
