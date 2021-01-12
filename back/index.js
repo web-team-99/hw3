@@ -296,7 +296,7 @@ app.put("/api/admin/post/crud/:id", function (req, res) {
 
   query.get(id).then(
     function (post) {
-      if( post.attributes.created_by.id !== user.id){
+      if( post.attributes.created_by !== user.id){
         sendResponse(res, 401, { "message": "permission denied." });
         return;
       }
@@ -335,7 +335,7 @@ app.delete("/api/admin/post/crud/:id", function (req, res) {
 
   query.get(id).then(
     function (post) {
-      if( post.attributes.created_by.id !== user.id){
+      if( post.attributes.created_by !== user.id){
         sendResponse(res, 401, { "message": "permission denied." });
         return;
       }
