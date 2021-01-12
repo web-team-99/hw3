@@ -10,6 +10,7 @@ function onCreatePostClicked() {
 
 function onLoad() {
   initPosts();
+  initUser();
   let url = new URL(window.location.href);
   let tab = url.searchParams.get("tab");
   if (tab === "home") {
@@ -20,6 +21,25 @@ function onLoad() {
     document.getElementById("data-tab").click();
     return;
   }
+}
+
+function initUser() {
+  fetch(server + "/api/admin/cuser/crud", {
+    method: "GET",
+    headers: { "Content-Type": "application/x-www-form-urlencoded", "auth-token": document.cookie.split("=")[1] }
+    // body: "email=" + email + "&password=" + pass,
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      // data.posts.forEach(element => {
+        // createPostDiv(element);
+      // });
+    })
+    .catch(err => {
+      console.log(err);
+      // messageP.innerText = data.message;
+    });
 }
 
 function initPosts() {
@@ -245,6 +265,7 @@ function onRemove(event){
     .catch((err) => {
       console.log(err);
     });
+    location.reload();
 }
 
 function onEdit(event){
@@ -271,4 +292,5 @@ function onEdit(event){
     .catch((err) => {
       console.log(err);
     });
+    location.reload();
 }

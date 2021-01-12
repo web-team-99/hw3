@@ -398,6 +398,45 @@ app.get("/api/admin/user/crud/:id", function (req, res) {
 });
 
 
+// read current user
+app.get("/api/admin/cuser/crud", function (req, res) {
+  // console.log(req.params.id);
+  // const Post = Parse.Object.extend("Post");
+  // let id = req.params.id;
+  const user = Parse.User.current();
+
+  // if (id !== user.id) {
+  //   sendResponse(res, 401, { "message": "Permission denied." });
+  //   return;
+  // }
+
+  // const query = new Parse.Query(Parse.User);
+  // query.get(id).then(
+    // function (user) {
+      let year = user.createdAt.getFullYear();
+      let month = (user.createdAt.getMonth() % 12) + 1;
+      let date = user.createdAt.getDate();
+      let created_at = year + "/" + month + "/" + date;
+
+      response = {
+        "id": user.id,
+        "email": user.attributes.username,
+        "created_at": created_at
+      };
+      sendResponse(res, 201, { "user": response });
+      return;
+    // }
+  //   ,function () {
+  //     sendResponse(res, 400, { "message": "url id is not valid" });
+  //     return;
+  //   }
+  // )
+    // .catch((err) => {
+      // handleParseError(res, err);
+    // });
+});
+
+
 
 function sendResponse(res, statusCode, response) {
   res.status(statusCode).send(response);
