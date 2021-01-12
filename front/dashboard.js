@@ -297,3 +297,8 @@ function onEdit(event){
     });
     location.reload();
 }
+
+function onLogout() {
+  document.cookie = "";
+  location.replace("./home.html?tab=home");
+}
