@@ -9,6 +9,7 @@ function onCreatePostClicked() {
 }
 
 function onLoad() {
+  initPosts();
   let url = new URL(window.location.href);
   let tab = url.searchParams.get("tab");
   if (tab === "home") {
@@ -19,6 +20,64 @@ function onLoad() {
     document.getElementById("data-tab").click();
     return;
   }
+}
+
+function initPosts() {
+  console.log(document.cookie);
+  fetch(server + "/api/admin/post/crud", {
+    method: "GET",
+    headers: { "Content-Type": "application/x-www-form-urlencoded", "auth-token": document.cookie.split("=")[1] }
+    // body: "email=" + email + "&password=" + pass,
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      data.posts.forEach(element => {
+        createPostDiv(element);
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      // messageP.innerText = data.message;
+    });
+}
+
+function createPostDiv(post) {
+  console.log(post);
+  const container = document.getElementById("posts_container");
+
+  // create a new div element
+  const postDiv = document.createElement("div");
+  console.log(postDiv);
+  postDiv.classList.add("card");
+  postDiv.classList.add("img-shadow");
+  postDiv.id = post.id;
+  container.appendChild(postDiv);
+
+  const body = document.createElement("div");
+  body.classList.add("card-body");
+  postDiv.appendChild(body);
+
+  const titleDiv = document.createElement("h5");
+  titleDiv.classList.add("card-title");
+  body.appendChild(titleDiv);
+
+  const title = document.createTextNode(post.title);
+  titleDiv.appendChild(title);
+
+  const textDiv = document.createElement("p");
+  textDiv.classList.add("card-text");
+  body.appendChild(textDiv);
+
+  const text = document.createTextNode(post.content);
+  textDiv.appendChild(text);
+
+  const footerDiv = document.createElement("div");
+  footerDiv.classList.add("card-footer");
+  footerDiv.classList.add("text-muted");
+  postDiv.appendChild(footerDiv);
+
+  footerDiv.innerHTML += post.created_at;
 }
 
 function onSidebarCollapseClicked() {
@@ -131,7 +190,7 @@ function createPost(title, description) {
   token = document.cookie.split("=")[1];
   console.log(token);
   fetch(server + "/api/admin/post/crud", {
-    method: "POST",
+    method: "GET",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "auth-token": token,

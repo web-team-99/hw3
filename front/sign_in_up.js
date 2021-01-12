@@ -162,7 +162,8 @@ function sendSignupReq(email, pass) {
       messageP.innerText = data.message;
     });
 
-  alert.classList.add("show-alert");
+  // alert.classList.add("show-alert");
+  location.replace("./dashboard.html?tab=home");
 }
 
 function sendSigninReq(email, pass) {
@@ -190,5 +191,6 @@ function sendSigninReq(email, pass) {
       messageP.innerText = data.message;
     });
 
-  alert.classList.add("show-alert");
+  // alert.classList.add("show-alert");
+  location.replace("./dashboard.html?tab=home");
 }
